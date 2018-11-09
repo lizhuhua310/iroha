@@ -49,10 +49,9 @@ namespace iroha {
           log_(logger::log("TxProcessor")) {
       // process stateful validation results
       pcs_->on_verified_proposal().subscribe(
-          [this](std::shared_ptr<validation::VerifiedProposalAndErrors>
-                     proposal_and_errors) {
+          [this](const simulator::VerifiedProposalCreatorEvent &event) {
             // notify about failed txs
-            const auto &errors = proposal_and_errors->second;
+            const auto &errors = event.verified_proposal_result->get()->second;
             std::lock_guard<std::mutex> lock(notifier_mutex_);
             for (const auto &tx_error : errors) {
               auto error_msg = composeErrorMessage(tx_error);
@@ -62,7 +61,7 @@ namespace iroha {
             }
             // notify about success txs
             for (const auto &successful_tx :
-                 proposal_and_errors->first->transactions()) {
+                 event.verified_proposal_result->get()->first->transactions()) {
               log_->info("on stateful validation success: {}",
                          successful_tx.hash().hex());
               this->publishStatus(TxStatusType::kStatefulValid,

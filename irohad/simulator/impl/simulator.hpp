@@ -37,21 +37,18 @@ namespace iroha {
 
       void process_proposal(const network::OrderingEvent &event) override;
 
-      rxcpp::observable<
-          std::shared_ptr<iroha::validation::VerifiedProposalAndErrors>>
-      on_verified_proposal() override;
+      rxcpp::observable<VerifiedProposalCreatorEvent> on_verified_proposal()
+          override;
 
       void process_verified_proposal(
-          const shared_model::interface::Proposal &proposal) override;
+          const VerifiedProposalCreatorEvent &event) override;
 
       rxcpp::observable<std::shared_ptr<shared_model::interface::Block>>
       on_block() override;
 
      private:
       // internal
-      rxcpp::subjects::subject<
-          std::shared_ptr<iroha::validation::VerifiedProposalAndErrors>>
-          notifier_;
+      rxcpp::subjects::subject<VerifiedProposalCreatorEvent> notifier_;
       rxcpp::subjects::subject<std::shared_ptr<shared_model::interface::Block>>
           block_notifier_;
 

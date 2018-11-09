@@ -158,11 +158,12 @@ TEST_F(SimulatorTest, ValidWhenPreviousBlock) {
 
   auto proposal_wrapper =
       make_test_subscriber<CallExact>(simulator->on_verified_proposal(), 1);
-  proposal_wrapper.subscribe([&proposal](auto verified_proposal) {
-    ASSERT_EQ(verified_proposal->first->height(), proposal->height());
-    ASSERT_EQ(verified_proposal->first->transactions(),
+  proposal_wrapper.subscribe([&proposal](auto event) {
+    ASSERT_EQ(event.verified_proposal_result->get()->first->height(),
+              proposal->height());
+    ASSERT_EQ(event.verified_proposal_result->get()->first->transactions(),
               proposal->transactions());
-    ASSERT_TRUE(verified_proposal->second.empty());
+    ASSERT_TRUE(event.verified_proposal_result->get()->second.empty());
   });
 
   auto block_wrapper =
@@ -312,13 +313,14 @@ TEST_F(SimulatorTest, RightNumberOfFailedTxs) {
 
   auto proposal_wrapper =
       make_test_subscriber<CallExact>(simulator->on_verified_proposal(), 1);
-  proposal_wrapper.subscribe([&verified_proposal,
-                              &tx_errors](auto verified_proposal_) {
+  proposal_wrapper.subscribe([&verified_proposal, &tx_errors](auto event) {
     // assure that txs in verified proposal do not include failed ones
-    ASSERT_EQ(verified_proposal_->first->height(), verified_proposal->height());
-    ASSERT_EQ(verified_proposal_->first->transactions(),
+    ASSERT_EQ(event.verified_proposal_result->get()->first->height(),
+              verified_proposal->height());
+    ASSERT_EQ(event.verified_proposal_result->get()->first->transactions(),
               verified_proposal->transactions());
-    ASSERT_TRUE(verified_proposal_->second.size() == tx_errors.size());
+    ASSERT_TRUE(event.verified_proposal_result->get()->second.size()
+                == tx_errors.size());
   });
 
   simulator->process_proposal(OrderingEvent{proposal, {proposal->height(), 0}});

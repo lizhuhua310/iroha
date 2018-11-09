@@ -36,10 +36,8 @@ namespace iroha {
 
       notifier_.get_observable().subscribe(
           verified_proposal_subscription_,
-          [this](std::shared_ptr<iroha::validation::VerifiedProposalAndErrors>
-                     verified_proposal_and_errors) {
-            this->process_verified_proposal(
-                *verified_proposal_and_errors->first);
+          [this](const VerifiedProposalCreatorEvent &event) {
+            this->process_verified_proposal(event);
           });
     }
 
@@ -48,8 +46,7 @@ namespace iroha {
       verified_proposal_subscription_.unsubscribe();
     }
 
-    rxcpp::observable<
-        std::shared_ptr<iroha::validation::VerifiedProposalAndErrors>>
+    rxcpp::observable<VerifiedProposalCreatorEvent>
     Simulator::on_verified_proposal() {
       return notifier_.get_observable();
     }
@@ -97,12 +94,13 @@ namespace iroha {
               validator_->validate(proposal, *storage));
       storage.reset();
 
-      notifier_.get_subscriber().on_next(
-          std::move(validated_proposal_and_errors));
+      notifier_.get_subscriber().on_next(VerifiedProposalCreatorEvent{
+          validated_proposal_and_errors, {proposal.height(), 0}});
     }
 
     void Simulator::process_verified_proposal(
-        const shared_model::interface::Proposal &proposal) {
+        const VerifiedProposalCreatorEvent &event) {
+      const auto &proposal = *event.verified_proposal_result->get()->first;
       log_->info("process verified proposal");
 
       auto height = block_query_factory_->createBlockQuery() |

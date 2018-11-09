@@ -131,8 +131,7 @@ class TransactionProcessorTest : public ::testing::Test {
       status_builder;
 
   rxcpp::subjects::subject<SynchronizationEvent> commit_notifier;
-  rxcpp::subjects::subject<
-      std::shared_ptr<iroha::validation::VerifiedProposalAndErrors>>
+  rxcpp::subjects::subject<simulator::VerifiedProposalCreatorEvent>
       verified_prop_notifier;
 
   const size_t proposal_size = 5;
@@ -260,8 +259,11 @@ TEST_F(TransactionProcessorTest, TransactionProcessorBlockCreatedTest) {
 
   // empty transactions errors - all txs are valid
   verified_prop_notifier.get_subscriber().on_next(
-      std::make_shared<iroha::validation::VerifiedProposalAndErrors>(
-          std::make_pair(proposal, iroha::validation::TransactionsErrors{})));
+      simulator::VerifiedProposalCreatorEvent{
+          std::make_shared<iroha::validation::VerifiedProposalAndErrors>(
+              std::make_pair(proposal,
+                             iroha::validation::TransactionsErrors{})),
+          {proposal->height(), 0}});
 
   auto block = TestBlockBuilder().transactions(txs).build();
 
@@ -317,8 +319,11 @@ TEST_F(TransactionProcessorTest, TransactionProcessorOnCommitTest) {
 
   // empty transactions errors - all txs are valid
   verified_prop_notifier.get_subscriber().on_next(
-      std::make_shared<iroha::validation::VerifiedProposalAndErrors>(
-          std::make_pair(proposal, iroha::validation::TransactionsErrors{})));
+      simulator::VerifiedProposalCreatorEvent{
+          std::make_shared<iroha::validation::VerifiedProposalAndErrors>(
+              std::make_pair(proposal,
+                             iroha::validation::TransactionsErrors{})),
+          {proposal->height(), 0}});
 
   auto block = TestBlockBuilder().transactions(txs).build();
 
@@ -390,8 +395,10 @@ TEST_F(TransactionProcessorTest, TransactionProcessorInvalidTxsTest) {
         invalid_txs[i].hash()));
   }
   verified_prop_notifier.get_subscriber().on_next(
-      std::make_shared<iroha::validation::VerifiedProposalAndErrors>(
-          std::make_pair(verified_proposal, txs_errors)));
+      simulator::VerifiedProposalCreatorEvent{
+          std::make_shared<iroha::validation::VerifiedProposalAndErrors>(
+              std::make_pair(verified_proposal, txs_errors)),
+          {verified_proposal->height(), 0}});
 
   auto block = TestBlockBuilder().transactions(block_txs).build();
 

@@ -1,18 +1,6 @@
 /**
- * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
- * http://soramitsu.co.jp
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright Soramitsu Co., Ltd. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef IROHA_VERIFIED_PROPOSAL_CREATOR_HPP
@@ -20,7 +8,7 @@
 
 #include <rxcpp/rx.hpp>
 #include "network/ordering_gate_common.hpp"
-#include "validation/stateful_validator_common.hpp"
+#include "simulator/verified_proposal_creator_common.hpp"
 
 namespace iroha {
   namespace simulator {
@@ -37,11 +25,9 @@ namespace iroha {
       virtual void process_proposal(const network::OrderingEvent &event) = 0;
 
       /**
-       * Emit proposals that was verified by validation
-       * @return
+       * Emit proposals which were verified by stateful validator
        */
-      virtual rxcpp::observable<
-          std::shared_ptr<validation::VerifiedProposalAndErrors>>
+      virtual rxcpp::observable<VerifiedProposalCreatorEvent>
       on_verified_proposal() = 0;
 
       virtual ~VerifiedProposalCreator() = default;

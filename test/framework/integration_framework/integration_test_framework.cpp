@@ -164,8 +164,9 @@ namespace integration_framework {
         ->on_verified_proposal()
         .zip(proposals)
         .flat_map(proposal_flat_map)
-        .subscribe([this](auto verified_proposal_and_errors) {
-          verified_proposal_queue_.push(verified_proposal_and_errors->first);
+        .subscribe([this](auto event) {
+          verified_proposal_queue_.push(
+              event.verified_proposal_result->get()->first);
           log_->info("verified proposal");
           queue_cond.notify_all();
         });

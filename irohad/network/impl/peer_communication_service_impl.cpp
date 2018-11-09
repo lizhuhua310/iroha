@@ -32,8 +32,7 @@ namespace iroha {
       return ordering_gate_->on_proposal();
     }
 
-    rxcpp::observable<
-        std::shared_ptr<iroha::validation::VerifiedProposalAndErrors>>
+    rxcpp::observable<simulator::VerifiedProposalCreatorEvent>
     PeerCommunicationServiceImpl::on_verified_proposal() const {
       return proposal_creator_->on_verified_proposal();
     }
