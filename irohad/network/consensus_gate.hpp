@@ -8,9 +8,9 @@
 
 #include <boost/optional.hpp>
 #include <rxcpp/rx.hpp>
-
 #include "consensus/gate_object.hpp"
 #include "consensus/round.hpp"
+#include "simulator/block_creator_common.hpp"
 
 namespace shared_model {
   namespace interface {
@@ -29,14 +29,8 @@ namespace iroha {
       using Round = consensus::Round;
       /**
        * Providing data for consensus for voting
-       * @param block is the block for which current node is voting
        */
-      virtual void vote(
-          boost::optional<std::shared_ptr<shared_model::interface::Proposal>>
-              proposal,
-          boost::optional<std::shared_ptr<shared_model::interface::Block>>
-              block,
-          Round round) = 0;
+      virtual void vote(const simulator::BlockCreatorEvent &event) = 0;
 
       using GateObject = consensus::GateObject;
 

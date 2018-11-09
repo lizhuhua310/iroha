@@ -6,16 +6,16 @@
 #ifndef IROHA_SIMULATOR_HPP
 #define IROHA_SIMULATOR_HPP
 
-#include <boost/optional.hpp>
+#include "simulator/block_creator.hpp"
+#include "simulator/verified_proposal_creator.hpp"
 
+#include <boost/optional.hpp>
 #include "ametsuchi/block_query_factory.hpp"
 #include "ametsuchi/temporary_factory.hpp"
 #include "cryptography/crypto_provider/crypto_model_signer.hpp"
 #include "interfaces/iroha_internal/unsafe_block_factory.hpp"
 #include "logger/logger.hpp"
 #include "network/ordering_gate.hpp"
-#include "simulator/block_creator.hpp"
-#include "simulator/verified_proposal_creator.hpp"
 #include "validation/stateful_validator.hpp"
 
 namespace iroha {
@@ -43,14 +43,12 @@ namespace iroha {
       void process_verified_proposal(
           const VerifiedProposalCreatorEvent &event) override;
 
-      rxcpp::observable<std::shared_ptr<shared_model::interface::Block>>
-      on_block() override;
+      rxcpp::observable<BlockCreatorEvent> on_block() override;
 
      private:
       // internal
       rxcpp::subjects::subject<VerifiedProposalCreatorEvent> notifier_;
-      rxcpp::subjects::subject<std::shared_ptr<shared_model::interface::Block>>
-          block_notifier_;
+      rxcpp::subjects::subject<BlockCreatorEvent> block_notifier_;
 
       rxcpp::composite_subscription proposal_subscription_;
       rxcpp::composite_subscription verified_proposal_subscription_;

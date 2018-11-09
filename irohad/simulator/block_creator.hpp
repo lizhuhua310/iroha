@@ -7,6 +7,7 @@
 #define IROHA_BLOCK_CREATOR_HPP
 
 #include <rxcpp/rx.hpp>
+#include "simulator/block_creator_common.hpp"
 #include "simulator/verified_proposal_creator_common.hpp"
 
 namespace shared_model {
@@ -32,10 +33,8 @@ namespace iroha {
 
       /**
        * Emit blocks made from proposals
-       * @return
        */
-      virtual rxcpp::observable<std::shared_ptr<shared_model::interface::Block>>
-      on_block() = 0;
+      virtual rxcpp::observable<BlockCreatorEvent> on_block() = 0;
 
       virtual ~BlockCreator() = default;
     };

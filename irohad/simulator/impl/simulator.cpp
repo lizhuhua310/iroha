@@ -95,7 +95,7 @@ namespace iroha {
       storage.reset();
 
       notifier_.get_subscriber().on_next(VerifiedProposalCreatorEvent{
-          validated_proposal_and_errors, {proposal.height(), 0}});
+          validated_proposal_and_errors, event.round});
     }
 
     void Simulator::process_verified_proposal(
@@ -117,11 +117,12 @@ namespace iroha {
                                             proposal.createdTime(),
                                             proposal.transactions());
       crypto_signer_->sign(*block);
-      block_notifier_.get_subscriber().on_next(block);
+      block_notifier_.get_subscriber().on_next(BlockCreatorEvent{
+          RoundData{event.verified_proposal_result->get()->first, block},
+          event.round});
     }
 
-    rxcpp::observable<std::shared_ptr<shared_model::interface::Block>>
-    Simulator::on_block() {
+    rxcpp::observable<BlockCreatorEvent> Simulator::on_block() {
       return block_notifier_.get_observable();
     }
 

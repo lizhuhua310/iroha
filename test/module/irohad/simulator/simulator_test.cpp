@@ -168,9 +168,10 @@ TEST_F(SimulatorTest, ValidWhenPreviousBlock) {
 
   auto block_wrapper =
       make_test_subscriber<CallExact>(simulator->on_block(), 1);
-  block_wrapper.subscribe([&proposal](const auto block) {
-    ASSERT_EQ(block->height(), proposal->height());
-    ASSERT_EQ(block->transactions(), proposal->transactions());
+  block_wrapper.subscribe([&proposal](auto event) {
+    ASSERT_EQ(event.round_data->block->height(), proposal->height());
+    ASSERT_EQ(event.round_data->block->transactions(),
+              proposal->transactions());
   });
 
   simulator->process_proposal(OrderingEvent{proposal, {proposal->height(), 0}});
