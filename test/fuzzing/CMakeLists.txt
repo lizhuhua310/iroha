@@ -92,6 +92,7 @@ add_executable(mst_fuzz mst_fuzz.cpp)
 target_link_libraries(mst_fuzz
   gtest::gtest
   gmock::gmock
+  application
   mst_transport
   protobuf-mutator
   )

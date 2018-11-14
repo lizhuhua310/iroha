@@ -49,7 +49,6 @@ namespace iroha {
 
 class Irohad {
  public:
-
   using RunResult = iroha::expected::Result<void, std::string>;
 
   /**
@@ -110,6 +109,14 @@ class Irohad {
   RunResult run();
 
   virtual ~Irohad();
+
+  /**
+   * Creates transaction validator
+   * @return unique_ptr to the validator created
+   */
+  static std::unique_ptr<shared_model::validation::AbstractValidator<
+      shared_model::interface::Transaction>>
+  getTxValidator();
 
  protected:
   // -----------------------| component initialization |------------------------

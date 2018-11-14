@@ -7,6 +7,7 @@
 
 #include "ametsuchi/impl/postgres_ordering_service_persistent_state.hpp"
 #include "ametsuchi/impl/wsv_restorer_impl.hpp"
+#include "application.hpp"
 #include "backend/protobuf/common_objects/proto_common_objects_factory.hpp"
 #include "backend/protobuf/proto_block_json_converter.hpp"
 #include "backend/protobuf/proto_permission_to_string.hpp"
@@ -195,9 +196,7 @@ void Irohad::initFactories() {
       std::make_shared<shared_model::interface::TransactionBatchFactoryImpl>();
   std::unique_ptr<shared_model::validation::AbstractValidator<
       shared_model::interface::Transaction>>
-      transaction_validator =
-          std::make_unique<shared_model::validation::
-                               DefaultOptionalSignedTransactionValidator>();
+      transaction_validator = getTxValidator();
   transaction_factory =
       std::make_shared<shared_model::proto::ProtoTransportFactory<
           shared_model::interface::Transaction,
@@ -439,4 +438,11 @@ Irohad::~Irohad() {
   // TODO andrei 17.09.18: IR-1710 Verify that all components' destructors are
   // called in irohad destructor
   storage->freeConnections();
+}
+
+std::unique_ptr<shared_model::validation::AbstractValidator<
+    shared_model::interface::Transaction>>
+Irohad::getTxValidator() {
+  return std::make_unique<
+      shared_model::validation::DefaultOptionalSignedTransactionValidator>();
 }

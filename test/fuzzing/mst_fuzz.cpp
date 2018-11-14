@@ -11,6 +11,7 @@
 #include "backend/protobuf/proto_transport_factory.hpp"
 #include "interfaces/iroha_internal/transaction_batch_factory_impl.hpp"
 #include "interfaces/iroha_internal/transaction_batch_parser_impl.hpp"
+#include "main/application.hpp"
 #include "module/irohad/multi_sig_transactions/mst_test_helpers.hpp"
 #include "multi_sig_transactions/transport/mst_transport_grpc.hpp"
 
@@ -26,9 +27,7 @@ namespace fuzzing {
           iroha::network::AsyncGrpcClient<google::protobuf::Empty>>();
       std::unique_ptr<shared_model::validation::AbstractValidator<
           shared_model::interface::Transaction>>
-          tx_validator =
-              std::make_unique<shared_model::validation::
-                                   DefaultOptionalSignedTransactionValidator>();
+          tx_validator = Irohad::getTxValidator();
       auto tx_factory =
           std::make_shared<shared_model::proto::ProtoTransportFactory<
               shared_model::interface::Transaction,
